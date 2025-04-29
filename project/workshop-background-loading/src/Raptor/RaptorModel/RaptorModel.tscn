@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://baeo8e1ff0tgw"]
+
+[ext_resource type="PackedScene" uid="uid://dqw4mkuhx2wy" path="res://assets/models/pbr_velociraptor_animated/scene.gltf" id="1_36pjg"]
+
+[node name="RaptorModel" instance=ExtResource("1_36pjg")]
