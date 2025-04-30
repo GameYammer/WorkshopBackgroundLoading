@@ -5,11 +5,36 @@
 extends Node3D
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
 
+func _on_button_add_raptor_pressed() -> void:
+	var start := 0
+	var end := 0
+	print("===========================================")
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+	# Load scene file
+	start = Time.get_ticks_usec()
+	var scene : PackedScene
+	if Global._is_using_cache:
+		scene = Global._scene_cache["res://src/Raptor/Raptor.tscn"]
+	else:
+		scene = ResourceLoader.load("res://src/Raptor/Raptor.tscn")
+	end = Time.get_ticks_usec()
+	print("Load tscn file time: %s usec" % [end - start])
+
+	# Instance raptor scene
+	start = Time.get_ticks_usec()
+	var raptor : CharacterBody3D = scene.instantiate()
+	end = Time.get_ticks_usec()
+	print("Create instance time: %s usec" % [end - start])
+
+	# Add the raptor to the world at a random position
+	start = Time.get_ticks_usec()
+	self.add_child(raptor)
+	const r := 10.0
+	raptor.transform.origin = Vector3(
+		randf_range(-r, r),
+		0.0,
+		randf_range(-r, r),
+	)
+	end = Time.get_ticks_usec()
+	print("Add to world time: %s usec" % [end - start])

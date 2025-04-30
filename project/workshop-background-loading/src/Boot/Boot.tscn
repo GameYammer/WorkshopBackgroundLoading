@@ -1,26 +1,42 @@
-[gd_scene load_steps=5 format=3 uid="uid://qb3p3425xgd5"]
+[gd_scene load_steps=2 format=3 uid="uid://cfh34gml7lsyd"]
 
 [ext_resource type="Script" path="res://src/Boot/Boot.gd" id="1_74ym8"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ije8l"]
-
-[sub_resource type="Sky" id="Sky_te0cl"]
-sky_material = SubResource("ProceduralSkyMaterial_ije8l")
-
-[sub_resource type="Environment" id="Environment_60ml1"]
-background_mode = 2
-sky = SubResource("Sky_te0cl")
-
-[node name="Boot" type="Node3D"]
+[node name="Boot" type="Control" node_paths=PackedStringArray("_button_start_cached", "_button_start_uncached")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_74ym8")
+_button_start_cached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartCached")
+_button_start_uncached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartUnCached")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_60ml1")
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
 
-[node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 4, 0)
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 100
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
+[node name="ButtonStartCached" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Start Cached"
+
+[node name="ButtonStartUnCached" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Start Un Cached"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartCached" to="." method="_on_button_start_cached_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartUnCached" to="." method="_on_button_start_un_cached_pressed"]
