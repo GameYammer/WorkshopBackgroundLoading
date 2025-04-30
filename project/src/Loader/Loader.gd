@@ -14,6 +14,7 @@ extends Node3D
 . Before loading the world, add a small sub viewport and load the scenes into it, to force shader compilation
 '''
 
+const THREAD_TROTTLE := 200
 
 var _loading_thread : Thread
 var _start_loading_time := 0.0
@@ -25,13 +26,14 @@ func _ready() -> void:
 	# Start loading in a background thread
 	_start_loading_time = Time.get_ticks_usec()
 
-	var on_done_cb := Callable(self, "_done_loading")
+	var on_each_cb := Callable(self, "_on_each")
+	var on_done_cb := Callable(self, "_on_done")
 	_loading_thread = Thread.new()
-	var err := _loading_thread.start(_start_loading.bind(on_done_cb))
+	var err := _loading_thread.start(_start_loading.bind(on_each_cb, on_done_cb))
 	assert(err == OK)
-	#_start_loading(on_done_cb)
+	#_start_loading(on_each_cb, on_done_cb)
 
-func _start_loading(on_done_cb : Callable) -> void:
+func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	# Load and cache materials inside resource files
 	print("Caching resources ...")
 	var resources_to_cache := Global.get_resource_file_list(["tres", "res", "material"])
@@ -57,35 +59,34 @@ func _start_loading(on_done_cb : Callable) -> void:
 				Global._material_cache.append(mat)
 				print("    %s" % [mat.resource_path])
 
-	# Call _done_loading back on the main thread
-	on_done_cb.call_deferred()
-
-
-func _done_loading() -> void:
-	var offset := Vector3.ZERO
-
 	print("Caching materials ...")
 	for mat in Global._material_cache:
-		#print([mat, mat.resource_path])
-		var cube = _material_cube.instantiate()
-		cube.mesh.material = mat
-		self.add_child(cube)
-		cube.transform.origin = offset
-		offset.x += 2
-		print("    %s" % [mat.resource_path])
+		on_each_cb.call_deferred(mat)
+		OS.delay_msec(THREAD_TROTTLE)
 
 	print("Caching materials ...")
 	for resource_name in Global._resource_cache:
 		var res = Global._resource_cache[resource_name]
 		if res is StandardMaterial3D:
-			#print([mat, mat.resource_path])
-			var cube = _material_cube.instantiate()
-			cube.mesh.material = res
-			self.add_child(cube)
-			cube.transform.origin = offset
-			offset.x += 2
-			print("    %s" % [res.resource_path])
+			on_each_cb.call_deferred(res)
+			OS.delay_msec(THREAD_TROTTLE)
 
+	# Call _on_done back on the main thread
+	OS.delay_msec(THREAD_TROTTLE)
+	on_done_cb.call_deferred()
+
+
+var _offset := Vector3.ZERO
+func _on_each(material : StandardMaterial3D) -> void:
+	#print([mat, mat.resource_path])
+	var cube = _material_cube.instantiate()
+	cube.mesh.material = material
+	self.add_child(cube)
+	cube.transform.origin = _offset
+	_offset.x += 2
+	print("    %s" % [material.resource_path])
+
+func _on_done() -> void:
 	# Get the time used
 	var ticks := Time.get_ticks_usec() - _start_loading_time
 	print("Loading took %s usec" % [ticks])
