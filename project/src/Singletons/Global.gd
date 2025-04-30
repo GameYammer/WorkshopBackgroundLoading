@@ -6,6 +6,7 @@ extends Node3D
 
 
 var _is_using_cache := false
+var _resource_cache := {}
 var _scene_cache := {}
 var _material_cache := []
 

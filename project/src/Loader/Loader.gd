@@ -32,10 +32,17 @@ func _ready() -> void:
 	#_start_loading(on_done_cb)
 
 func _start_loading(on_done_cb : Callable) -> void:
-	var scenes_to_cache := Global.get_resource_file_list(["tscn", "scn"])
+	# Load and cache materials inside resource files
+	print("Caching resources ...")
+	var resources_to_cache := Global.get_resource_file_list(["tres", "res", "material"])
+	#print(resources_to_cache)
+	for resource_name in resources_to_cache:
+		Global._resource_cache[resource_name] = ResourceLoader.load(resource_name)
+		print("    %s" % [resource_name])
 
 	# Load and cache the scenes
 	print("Caching scenes ...")
+	var scenes_to_cache := Global.get_resource_file_list(["tscn", "scn"])
 	for scene_name in scenes_to_cache:
 		Global._scene_cache[scene_name] = ResourceLoader.load(scene_name)
 		print("    %s" % [scene_name])
@@ -56,6 +63,7 @@ func _start_loading(on_done_cb : Callable) -> void:
 
 func _done_loading() -> void:
 	var offset := Vector3.ZERO
+
 	print("Caching materials ...")
 	for mat in Global._material_cache:
 		#print([mat, mat.resource_path])
@@ -65,6 +73,18 @@ func _done_loading() -> void:
 		cube.transform.origin = offset
 		offset.x += 2
 		print("    %s" % [mat.resource_path])
+
+	print("Caching materials ...")
+	for resource_name in Global._resource_cache:
+		var res = Global._resource_cache[resource_name]
+		if res is StandardMaterial3D:
+			#print([mat, mat.resource_path])
+			var cube = _material_cube.instantiate()
+			cube.mesh.material = res
+			self.add_child(cube)
+			cube.transform.origin = offset
+			offset.x += 2
+			print("    %s" % [res.resource_path])
 
 	# Get the time used
 	var ticks := Time.get_ticks_usec() - _start_loading_time
