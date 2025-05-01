@@ -13,11 +13,7 @@ func _on_button_add_raptor_pressed() -> void:
 
 	# Load scene file
 	start = Time.get_ticks_usec()
-	var scene : PackedScene
-	if Global._is_using_cache:
-		scene = Global._resource_cache["res://src/Raptor/Raptor.tscn"]
-	else:
-		scene = ResourceLoader.load("res://src/Raptor/Raptor.tscn")
+	var scene : PackedScene = ResourceCache.get_resource("res://src/Raptor/Raptor.tscn")
 	end = Time.get_ticks_usec()
 	print("Load tscn file time: %s usec" % [end - start])
 
