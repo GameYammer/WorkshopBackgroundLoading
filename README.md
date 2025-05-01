@@ -5,6 +5,9 @@
 
 # Credits
 
+	add kenney particles to credits
+
+
 	PBR Velociraptor (Animated)
 	CC BY 4.0
 	https://creativecommons.org/licenses/by/4.0/

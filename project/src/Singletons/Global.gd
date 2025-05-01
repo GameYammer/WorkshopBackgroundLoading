@@ -7,8 +7,8 @@ extends Node3D
 
 var _is_using_cache := false
 var _resource_cache := {}
-var _scene_cache := {}
-var _material_cache := []
+var _material_inst_cache := []
+var _particle_inst_cache := []
 
 func _ready() -> void:
 	# Every 1 second show FPS in the title
@@ -71,6 +71,20 @@ func get_all_node_materials(node : Node) -> Array:
 				mats.append(mat)
 
 	return mats
+
+func get_all_node_particles(node : Node) -> Array:
+	var retval := []
+	for particles in find_all_children_of_type(node, GPUParticles3D):
+		var particles_copy = particles.duplicate()
+		particles_copy.script = null
+		retval.append(particles_copy)
+
+	for particles in find_all_children_of_type(node, CPUParticles3D):
+		var particles_copy = particles.duplicate()
+		particles_copy.script = null
+		retval.append(particles_copy)
+
+	return retval
 
 func get_resource_file_list(extensions : Array[String], paths_to_ignore := []) -> Array[String]:
 	var resources : Array[String] = []
