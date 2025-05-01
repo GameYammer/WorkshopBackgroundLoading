@@ -5,7 +5,10 @@
 
 # Credits
 
-	add kenney particles to credits
+	Kenney Particle Pack
+	CC0 1.0 Universal
+	https://creativecommons.org/publicdomain/zero/1.0/
+	https://www.kenney.nl/assets/particle-pack
 
 
 	PBR Velociraptor (Animated)
