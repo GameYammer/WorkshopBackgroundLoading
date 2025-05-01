@@ -51,8 +51,17 @@ offset_left = -356.0
 offset_bottom = 179.0
 grow_horizontal = 0
 
-[node name="ButtonAddRaptor" type="Button" parent="CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ButtonAddRaptor" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 text = "Add Raptor"
 
-[connection signal="pressed" from="CenterContainer/ButtonAddRaptor" to="." method="_on_button_add_raptor_pressed"]
+[node name="ButtonAddSmoke" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Add Smoke"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonAddRaptor" to="." method="_on_button_add_raptor_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonAddSmoke" to="." method="_on_button_add_smoke_pressed"]
