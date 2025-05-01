@@ -6,8 +6,6 @@ extends Control
 
 '''
 # TODO
-. move all cache code into singleton called ResourceCache or something
-. Add black loading screen with progress bar
 . Add other Materials
 . Cache materials in dict by name instead of array
 . Create an instance of the World in the thread then switch to it instead of change_scene_to_packed
