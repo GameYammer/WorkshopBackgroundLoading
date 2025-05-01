@@ -5,6 +5,7 @@
 extends Node
 
 var _is_using_cache := false
+var _is_logging := true
 var _resource_cache := {}
 var _material_inst_cache := []
 var _particle_inst_cache := []
@@ -35,15 +36,15 @@ func start_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	#_start_loading(on_each_cb, on_done_cb)
 
 func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
-	print("Loading resource files ...")
+	if _is_logging: print("Loading resource files ...")
 	var resources_to_cache := self.get_resource_file_list(["tres", "res", "material", "tscn", "scn"])
 	for resource_path in resources_to_cache:
 		var res = ResourceLoader.load(resource_path)
 		#print(["!!!", res.get_class()])
 		_resource_cache[resource_path] = res
-		print("    %s" % [resource_path])
+		if _is_logging: print("    %s" % [resource_path])
 
-	print("Finding materials in scene files ...")
+	if _is_logging: print("Finding materials in scene files ...")
 	for scene_path in _resource_cache:
 		var res = _resource_cache[scene_path]
 		if res is PackedScene:
@@ -52,13 +53,13 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			for mat in mats:
 				if not _material_inst_cache.has(mat):
 					_material_inst_cache.append(mat)
-					print("    %s" % [mat.resource_path])
+					if _is_logging: print("    %s" % [mat.resource_path])
 
 			var particles := Util.get_all_node_particles(inst)
 			for par in particles:
 				if not _particle_inst_cache.has(par):
 					_particle_inst_cache.append(par)
-					print("    %s" % [par])
+					if _is_logging: print("    %s" % [par])
 
 	# Count things to cache
 	var total_progress := 0.0
@@ -72,7 +73,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	for par in _particle_inst_cache:
 		total_count_things_to_cache += 1
 
-	print("Caching materials in resource files ...")
+	if _is_logging: print("Caching materials in resource files ...")
 	for resource_path in _resource_cache:
 		var res = _resource_cache[resource_path]
 		if res is StandardMaterial3D:
@@ -82,7 +83,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			current_count_things_to_cache += 1
 			total_progress = current_count_things_to_cache / total_count_things_to_cache
 			on_each_cb.call_deferred(cube, total_progress)
-			print("    %s" % [res.resource_path])
+			if _is_logging: print("    %s" % [res.resource_path])
 			OS.delay_msec(THREAD_THROTTLE_MSEC)
 		#elif res is ParticleProcessMaterial:
 			#var cube = _material_cube.instantiate()
@@ -93,7 +94,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			#on_each_cb.call_deferred(cube, total_progress)
 			#OS.delay_msec(THREAD_THROTTLE_MSEC)
 
-	print("Caching materials in scenes ...")
+	if _is_logging: print("Caching materials in scenes ...")
 	for mat in _material_inst_cache:
 		var cube = _material_cube.instantiate()
 		cube.mesh.material = mat
@@ -101,10 +102,10 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		current_count_things_to_cache += 1
 		total_progress = current_count_things_to_cache / total_count_things_to_cache
 		on_each_cb.call_deferred(cube, total_progress)
-		print("    %s" % [mat])
+		if _is_logging: print("    %s" % [mat])
 		OS.delay_msec(THREAD_THROTTLE_MSEC)
 
-	print("Caching materials in particles ...")
+	if _is_logging: print("Caching materials in particles ...")
 	for par in _particle_inst_cache:
 		var new_particles = par.duplicate()
 		new_particles.emitting = true
@@ -112,7 +113,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		current_count_things_to_cache += 1
 		total_progress = current_count_things_to_cache / total_count_things_to_cache
 		on_each_cb.call_deferred(new_particles, total_progress)
-		print("    %s" % [par])
+		if _is_logging: print("    %s" % [par])
 		OS.delay_msec(THREAD_THROTTLE_MSEC)
 
 	# Call _on_done back on the main thread
