@@ -2,7 +2,7 @@
 # This file is licensed under the MIT License
 # https://github.com/GameYammer/WorkshopBackgroundLoading
 
-extends Node3D
+extends Control
 
 '''
 # TODO
@@ -18,6 +18,8 @@ extends Node3D
 var _start_loading_time := 0.0
 var _offset := Vector3.ZERO
 
+@onready var _progress_bar := $CenterContainer/VBoxContainer/ProgressBar
+
 func _ready() -> void:
 	await self.get_tree().create_timer(1.0).timeout
 
@@ -29,11 +31,12 @@ func _ready() -> void:
 
 	ResourceCache.start_caching_thread(on_each_cb, on_done_cb)
 
-func _on_each(node_with_material : Node) -> void:
+func _on_each(node_with_material : Node, total_progress := 0.0) -> void:
 	# Add the node to the screen so the material will show and force the video card to compile it now
 	self.add_child(node_with_material)
 	node_with_material.transform.origin = _offset
 	_offset.x += 2
+	_progress_bar.value = total_progress * 100.0
 
 func _on_done() -> void:
 	# Get the time used

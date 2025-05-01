@@ -9,7 +9,7 @@ var _resource_cache := {}
 var _material_inst_cache := []
 var _particle_inst_cache := []
 
-var THREAD_THROTTLE_MSEC := 200
+var THREAD_THROTTLE_MSEC := 100
 
 var _loading_thread : Thread
 @onready var _material_cube := preload("res://src/MaterialCube/MaterialCube.tscn")
@@ -60,26 +60,47 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 					_particle_inst_cache.append(par)
 					print("    %s" % [par])
 
+	# Count things to cache
+	var total_progress := 0.0
+	var total_count_things_to_cache := 0.0
+	var current_count_things_to_cache := 0.0
+	for resource_path in _resource_cache:
+		if _resource_cache[resource_path] is StandardMaterial3D:
+			total_count_things_to_cache += 1
+	for mat in _material_inst_cache:
+		total_count_things_to_cache += 1
+	for par in _particle_inst_cache:
+		total_count_things_to_cache += 1
+
 	print("Caching materials in resource files ...")
 	for resource_path in _resource_cache:
 		var res = _resource_cache[resource_path]
 		if res is StandardMaterial3D:
 			var cube = _material_cube.instantiate()
 			cube.mesh.material = res
-			on_each_cb.call_deferred(cube)
+
+			current_count_things_to_cache += 1
+			total_progress = current_count_things_to_cache / total_count_things_to_cache
+			on_each_cb.call_deferred(cube, total_progress)
 			print("    %s" % [res.resource_path])
 			OS.delay_msec(THREAD_THROTTLE_MSEC)
 		#elif res is ParticleProcessMaterial:
 			#var cube = _material_cube.instantiate()
 			#cube.mesh.material = res
-			#on_each_cb.call_deferred(cube)
+
+			#current_count_things_to_cache += 1
+			#total_progress = current_count_things_to_cache / total_count_things_to_cache
+			#on_each_cb.call_deferred(cube, total_progress)
 			#OS.delay_msec(THREAD_THROTTLE_MSEC)
 
 	print("Caching materials in scenes ...")
 	for mat in _material_inst_cache:
 		var cube = _material_cube.instantiate()
 		cube.mesh.material = mat
-		on_each_cb.call_deferred(cube)
+
+		current_count_things_to_cache += 1
+		total_progress = current_count_things_to_cache / total_count_things_to_cache
+		on_each_cb.call_deferred(cube, total_progress)
 		print("    %s" % [mat])
 		OS.delay_msec(THREAD_THROTTLE_MSEC)
 
@@ -87,7 +108,10 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	for par in _particle_inst_cache:
 		var new_particles = par.duplicate()
 		new_particles.emitting = true
-		on_each_cb.call_deferred(new_particles)
+
+		current_count_things_to_cache += 1
+		total_progress = current_count_things_to_cache / total_count_things_to_cache
+		on_each_cb.call_deferred(new_particles, total_progress)
 		print("    %s" % [par])
 		OS.delay_msec(THREAD_THROTTLE_MSEC)
 
