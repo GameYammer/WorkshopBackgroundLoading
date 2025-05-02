@@ -23,10 +23,12 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
 layout_mode = 2
+theme_override_constants/separation = 200
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 100
+alignment = 1
 
 [node name="ButtonStartWithPreLoad" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -39,6 +41,15 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Start
 (Don't pre load anything)"
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "This example shows how to:
+
+1. Pre load and cache scenes
+2. Pre load and cache material shaders
+3. Load and instance scenes in background thread and add to scene tree asynchronously "
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartWithPreLoad" to="." method="_on_button_start_with_pre_load_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartNormal" to="." method="_on_button_start_normal_pressed"]
