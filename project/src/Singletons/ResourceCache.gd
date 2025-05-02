@@ -4,38 +4,32 @@
 
 extends Node
 
-var _is_using_cache := false
-var _is_logging := true
+
+var _is_logging := false
 var _resource_cache := {}
 var _material_inst_cache := []
 var _particle_inst_cache := []
 
-var THREAD_THROTTLE_MSEC := 100
-
+var _thread_sleep_ms := 100
 var _loading_thread : Thread
+
 @onready var _material_cube := preload("res://src/MaterialCube/MaterialCube.tscn")
 
 func get_resource(resource_path : String) -> Resource:
-	if _is_using_cache:
-		return _resource_cache[resource_path]
-	else:
-		return ResourceLoader.load(resource_path)
+	if not _resource_cache.has(resource_path):
+		_resource_cache[resource_path] = ResourceLoader.load(resource_path)
 
-func setup(is_using_cache : bool, loading_scene_path : String, start_scene_path : String) -> void:
-	_is_using_cache = is_using_cache
+	return _resource_cache[resource_path]
 
-	if _is_using_cache:
-		self.get_tree().change_scene_to_file(loading_scene_path)
-	else:
-		self.get_tree().change_scene_to_file(start_scene_path)
-
-func start_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
+func start_caching_thread(on_each_cb : Callable, on_done_cb : Callable, thread_sleep_ms := 100) -> void:
+	_thread_sleep_ms = thread_sleep_ms
 	_loading_thread = Thread.new()
-	var err := _loading_thread.start(_start_loading.bind(on_each_cb, on_done_cb), Thread.PRIORITY_LOW)
+	var err := _loading_thread.start(_run_caching_thread.bind(on_each_cb, on_done_cb), Thread.PRIORITY_LOW)
 	assert(err == OK)
-	#_start_loading(on_each_cb, on_done_cb)
+	#_run_caching_thread(on_each_cb, on_done_cb)
 
-func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
+
+func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	if _is_logging: print("Loading resource files ...")
 	var resources_to_cache := self.get_resource_file_list(["tres", "res", "material", "tscn", "scn"])
 	for resource_path in resources_to_cache:
@@ -84,7 +78,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			total_progress = current_count_things_to_cache / total_count_things_to_cache
 			on_each_cb.call_deferred(cube, total_progress)
 			if _is_logging: print("    %s" % [res.resource_path])
-			OS.delay_msec(THREAD_THROTTLE_MSEC)
+			OS.delay_msec(_thread_sleep_ms)
 		#elif res is ParticleProcessMaterial:
 			#var cube = _material_cube.instantiate()
 			#cube.mesh.material = res
@@ -92,7 +86,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			#current_count_things_to_cache += 1
 			#total_progress = current_count_things_to_cache / total_count_things_to_cache
 			#on_each_cb.call_deferred(cube, total_progress)
-			#OS.delay_msec(THREAD_THROTTLE_MSEC)
+			#OS.delay_msec(_thread_sleep_ms)
 
 	if _is_logging: print("Caching materials in scenes ...")
 	for mat in _material_inst_cache:
@@ -103,7 +97,7 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		total_progress = current_count_things_to_cache / total_count_things_to_cache
 		on_each_cb.call_deferred(cube, total_progress)
 		if _is_logging: print("    %s" % [mat])
-		OS.delay_msec(THREAD_THROTTLE_MSEC)
+		OS.delay_msec(_thread_sleep_ms)
 
 	if _is_logging: print("Caching materials in particles ...")
 	for par in _particle_inst_cache:
@@ -114,10 +108,10 @@ func _start_loading(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		total_progress = current_count_things_to_cache / total_count_things_to_cache
 		on_each_cb.call_deferred(new_particles, total_progress)
 		if _is_logging: print("    %s" % [par])
-		OS.delay_msec(THREAD_THROTTLE_MSEC)
+		OS.delay_msec(_thread_sleep_ms)
 
 	# Call _on_done back on the main thread
-	OS.delay_msec(THREAD_THROTTLE_MSEC)
+	OS.delay_msec(_thread_sleep_ms)
 	on_done_cb.call_deferred()
 
 func get_resource_file_list(extensions : Array[String], paths_to_ignore := []) -> Array[String]:

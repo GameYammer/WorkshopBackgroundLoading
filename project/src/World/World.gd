@@ -7,6 +7,26 @@ extends Node3D
 
 
 func _on_button_add_raptor_pressed() -> void:
+	var cb := func(raptor : CharacterBody3D) -> void:
+		var start := 0
+		var end := 0
+		print("===========================================")
+
+		start = Time.get_ticks_usec()
+		#print("!!! Got: %s" % [raptor])
+		self.add_child(raptor)
+		const r := 10.0
+		raptor.transform.origin = Vector3(
+			randf_range(-r, r),
+			0.0,
+			randf_range(-r, r),
+		)
+		end = Time.get_ticks_usec()
+		print("Add to world time: %s usec" % [end - start])
+	Instancer.create_async("res://src/Raptor/Raptor.tscn", cb)
+
+
+func _on_button_add_raptor_sync_pressed() -> void:
 	var start := 0
 	var end := 0
 	print("===========================================")
@@ -35,8 +55,26 @@ func _on_button_add_raptor_pressed() -> void:
 	end = Time.get_ticks_usec()
 	print("Add to world time: %s usec" % [end - start])
 
-
 func _on_button_add_smoke_pressed() -> void:
+	var cb := func(smoke : GPUParticles3D) -> void:
+		var start := 0
+		var end := 0
+		print("===========================================")
+
+		start = Time.get_ticks_usec()
+		#print("!!! Got: %s" % [smoke])
+		self.add_child(smoke)
+		const r := 10.0
+		smoke.transform.origin = Vector3(
+			randf_range(-r, r),
+			0.0,
+			randf_range(-r, r),
+		)
+		end = Time.get_ticks_usec()
+		print("Add to world time: %s usec" % [end - start])
+	Instancer.create_async("res://src/Effects/BlackSmokeConstant/BlackSmokeConstant.tscn", cb)
+
+func _on_button_add_smoke_sync_pressed() -> void:
 	var start := 0
 	var end := 0
 	print("===========================================")

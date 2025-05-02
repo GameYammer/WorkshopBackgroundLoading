@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://qb3p3425xgd5"]
 
-[ext_resource type="Script" path="res://src/Loader/Loader.gd" id="1_epp5u"]
+[ext_resource type="Script" path="res://src/LoadingScreen/LoadingScreen.gd" id="1_epp5u"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ije8l"]
 
@@ -11,7 +11,7 @@ sky_material = SubResource("ProceduralSkyMaterial_ije8l")
 background_mode = 2
 sky = SubResource("Sky_te0cl")
 
-[node name="Loader" type="Control"]
+[node name="LoadingScreen" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

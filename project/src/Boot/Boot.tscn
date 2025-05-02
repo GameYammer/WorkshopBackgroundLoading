@@ -10,8 +10,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_74ym8")
-_button_start_cached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartCached")
-_button_start_uncached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartUnCached")
+_button_start_cached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartWithPreLoad")
+_button_start_uncached = NodePath("CenterContainer/VBoxContainer/HBoxContainer/ButtonStartNormal")
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -28,15 +28,17 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 100
 
-[node name="ButtonStartCached" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="ButtonStartWithPreLoad" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Start Cached"
+text = "Start
+(Pre load scenes and materials)"
 
-[node name="ButtonStartUnCached" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="ButtonStartNormal" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "Start Un Cached"
+text = "Start
+(Don't pre load anything)"
 
-[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartCached" to="." method="_on_button_start_cached_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartUnCached" to="." method="_on_button_start_un_cached_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartWithPreLoad" to="." method="_on_button_start_with_pre_load_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/HBoxContainer/ButtonStartNormal" to="." method="_on_button_start_normal_pressed"]

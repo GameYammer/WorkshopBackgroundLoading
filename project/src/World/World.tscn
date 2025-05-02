@@ -51,17 +51,35 @@ offset_left = -356.0
 offset_bottom = 179.0
 grow_horizontal = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 100
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="ButtonAddRaptor" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="ButtonAddRaptor" type="Button" parent="CenterContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-text = "Add Raptor"
+text = "Add Raptor Async"
 
-[node name="ButtonAddSmoke" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="ButtonAddSmoke" type="Button" parent="CenterContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
-text = "Add Smoke"
+text = "Add Smoke Async"
 
-[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonAddRaptor" to="." method="_on_button_add_raptor_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/ButtonAddSmoke" to="." method="_on_button_add_smoke_pressed"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ButtonAddRaptorSync" type="Button" parent="CenterContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Add Raptor Sync"
+
+[node name="ButtonAddSmokeSync" type="Button" parent="CenterContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+text = "Add Smoke Sync"
+
+[connection signal="pressed" from="CenterContainer/HBoxContainer/VBoxContainer/ButtonAddRaptor" to="." method="_on_button_add_raptor_pressed"]
+[connection signal="pressed" from="CenterContainer/HBoxContainer/VBoxContainer/ButtonAddSmoke" to="." method="_on_button_add_smoke_pressed"]
+[connection signal="pressed" from="CenterContainer/HBoxContainer/VBoxContainer2/ButtonAddRaptorSync" to="." method="_on_button_add_raptor_sync_pressed"]
+[connection signal="pressed" from="CenterContainer/HBoxContainer/VBoxContainer2/ButtonAddSmokeSync" to="." method="_on_button_add_smoke_sync_pressed"]

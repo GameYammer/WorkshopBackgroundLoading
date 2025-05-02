@@ -24,10 +24,11 @@ func _ready() -> void:
 	# Start loading in a background thread
 	_start_loading_time = Time.get_ticks_usec()
 
+	var thread_sleep_ms := 10
 	var on_each_cb := Callable(self, "_on_each")
 	var on_done_cb := Callable(self, "_on_done")
 
-	ResourceCache.start_caching_thread(on_each_cb, on_done_cb)
+	ResourceCache.start_caching_thread(on_each_cb, on_done_cb, thread_sleep_ms)
 
 func _on_each(node_with_material : Node, total_progress := 0.0) -> void:
 	# Add the node to the screen so the material will show and force the video card to compile it now
