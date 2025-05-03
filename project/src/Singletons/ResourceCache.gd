@@ -66,18 +66,18 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 					if _is_logging: print("    %s" % [par])
 
 	# Count things to cache
-	var total_progress := 0.0
-	var total_count_things_to_cache := 0.0
-	var current_count_things_to_cache := 0.0
+	var progress := 0.0
+	var total := 0.0
+	var count := 0.0
 	for resource_path in _resource_cache:
 		if _resource_cache[resource_path] is StandardMaterial3D:
-			total_count_things_to_cache += 1
+			total += 1
 	for mat in _material_inst_cache:
-		total_count_things_to_cache += 1
+		total += 1
 	for par in _particle_inst_cache:
-		total_count_things_to_cache += 1
+		total += 1
 	for node in _node_inst_cache:
-		total_count_things_to_cache += 1
+		total += 1
 
 	if _is_logging: print("Caching materials in resource files ...")
 	for resource_path in _resource_cache:
@@ -86,18 +86,18 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 			var cube = _material_cube.instantiate()
 			cube.mesh.material = res
 
-			current_count_things_to_cache += 1
-			total_progress = current_count_things_to_cache / total_count_things_to_cache
-			on_each_cb.call_deferred(cube, total_progress)
+			count += 1
+			progress = count / total
+			on_each_cb.call_deferred(cube, progress)
 			if _is_logging: print("    %s" % [res.resource_path])
 			OS.delay_msec(_thread_sleep_ms)
 		#elif res is ParticleProcessMaterial:
 			#var cube = _material_cube.instantiate()
 			#cube.mesh.material = res
 
-			#current_count_things_to_cache += 1
-			#total_progress = current_count_things_to_cache / total_count_things_to_cache
-			#on_each_cb.call_deferred(cube, total_progress)
+			#count += 1
+			#progress = count / total
+			#on_each_cb.call_deferred(cube, progress)
 			#OS.delay_msec(_thread_sleep_ms)
 
 	if _is_logging: print("Caching materials in scenes ...")
@@ -105,9 +105,9 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		var cube = _material_cube.instantiate()
 		cube.mesh.material = mat
 
-		current_count_things_to_cache += 1
-		total_progress = current_count_things_to_cache / total_count_things_to_cache
-		on_each_cb.call_deferred(cube, total_progress)
+		count += 1
+		progress = count / total
+		on_each_cb.call_deferred(cube, progress)
 		if _is_logging: print("    %s" % [mat])
 		OS.delay_msec(_thread_sleep_ms)
 
@@ -116,9 +116,9 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		var new_particles = par.duplicate()
 		new_particles.emitting = true
 
-		current_count_things_to_cache += 1
-		total_progress = current_count_things_to_cache / total_count_things_to_cache
-		on_each_cb.call_deferred(new_particles, total_progress)
+		count += 1
+		progress = count / total
+		on_each_cb.call_deferred(new_particles, progress)
 		if _is_logging: print("    %s" % [par])
 		OS.delay_msec(_thread_sleep_ms)
 
@@ -126,9 +126,9 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	for inst in _node_inst_cache:
 		var new_inst = inst.duplicate()
 
-		current_count_things_to_cache += 1
-		total_progress = current_count_things_to_cache / total_count_things_to_cache
-		on_each_cb.call_deferred(new_inst, total_progress)
+		count += 1
+		progress = count / total
+		on_each_cb.call_deferred(new_inst, progress)
 		if _is_logging: print("    %s" % [inst])
 		OS.delay_msec(_thread_sleep_ms)
 
