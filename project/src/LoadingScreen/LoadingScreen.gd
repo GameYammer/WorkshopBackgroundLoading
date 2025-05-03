@@ -6,6 +6,7 @@ extends Control
 
 '''
 # TODO
+. Make threads shut down correctly
 . Add other Materials
 . Cache materials in dict by name instead of array
 . Create an instance of the World in the thread then switch to it instead of change_scene_to_packed
@@ -24,7 +25,7 @@ func _ready() -> void:
 	# Start loading in a background thread
 	_start_loading_time = Time.get_ticks_usec()
 
-	var thread_sleep_ms := 10
+	var thread_sleep_ms := 300
 	var on_each_cb := Callable(self, "_on_each")
 	var on_done_cb := Callable(self, "_on_done")
 

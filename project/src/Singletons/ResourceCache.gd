@@ -5,10 +5,11 @@
 extends Node
 
 
-var _is_logging := false
+var _is_logging := true
 var _resource_cache := {}
 var _material_inst_cache := []
 var _particle_inst_cache := []
+var _node_inst_cache := []
 
 var _thread_sleep_ms := 100
 var _loading_thread : Thread
@@ -38,6 +39,15 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		_resource_cache[resource_path] = res
 		if _is_logging: print("    %s" % [resource_path])
 
+	if _is_logging: print("Finding scenes in group 'precache' ...")
+	for scene_path in _resource_cache:
+		var res = _resource_cache[scene_path]
+		if res is PackedScene:
+			var inst = res.instantiate()
+			inst.script = null
+			if inst.is_in_group("precache"):
+				_node_inst_cache.append(inst)
+
 	if _is_logging: print("Finding materials in scene files ...")
 	for scene_path in _resource_cache:
 		var res = _resource_cache[scene_path]
@@ -65,6 +75,8 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	for mat in _material_inst_cache:
 		total_count_things_to_cache += 1
 	for par in _particle_inst_cache:
+		total_count_things_to_cache += 1
+	for node in _node_inst_cache:
 		total_count_things_to_cache += 1
 
 	if _is_logging: print("Caching materials in resource files ...")
@@ -99,7 +111,7 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		if _is_logging: print("    %s" % [mat])
 		OS.delay_msec(_thread_sleep_ms)
 
-	if _is_logging: print("Caching materials in particles ...")
+	if _is_logging: print("Caching particle materials ...")
 	for par in _particle_inst_cache:
 		var new_particles = par.duplicate()
 		new_particles.emitting = true
@@ -108,6 +120,16 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 		total_progress = current_count_things_to_cache / total_count_things_to_cache
 		on_each_cb.call_deferred(new_particles, total_progress)
 		if _is_logging: print("    %s" % [par])
+		OS.delay_msec(_thread_sleep_ms)
+
+	if _is_logging: print("Caching node materials in group precache ...")
+	for inst in _node_inst_cache:
+		var new_inst = inst.duplicate()
+
+		current_count_things_to_cache += 1
+		total_progress = current_count_things_to_cache / total_count_things_to_cache
+		on_each_cb.call_deferred(new_inst, total_progress)
+		if _is_logging: print("    %s" % [inst])
 		OS.delay_msec(_thread_sleep_ms)
 
 	# Call _on_done back on the main thread

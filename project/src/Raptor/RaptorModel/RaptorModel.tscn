@@ -2,4 +2,4 @@
 
 [ext_resource type="PackedScene" uid="uid://dqw4mkuhx2wy" path="res://assets/models/pbr_velociraptor_animated/scene.gltf" id="1_36pjg"]
 
-[node name="RaptorModel" instance=ExtResource("1_36pjg")]
+[node name="RaptorModel" groups=["precache"] instance=ExtResource("1_36pjg")]
