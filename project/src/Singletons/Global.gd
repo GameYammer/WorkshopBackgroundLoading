@@ -6,6 +6,9 @@ extends Node3D
 
 
 func _ready() -> void:
+	# Turn off the generic quit handler
+	self.get_tree().set_auto_accept_quit(false)
+
 	# Every 1 second show FPS in the title
 	var timer := Timer.new()
 	Global.add_child(timer)
@@ -21,3 +24,7 @@ func _on_timer_fps_timeout() -> void:
 	var fps := Engine.get_frames_per_second()
 	var title := "(Engine: %s) | FPS: %s" % [godot_debug, fps]
 	self.get_window().set_title(title)
+
+func _notification(what : int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		self.get_tree().quit()
