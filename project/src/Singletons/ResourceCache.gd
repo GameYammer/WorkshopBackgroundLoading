@@ -32,7 +32,7 @@ func start_caching_thread(on_each_cb : Callable, on_done_cb : Callable, thread_s
 
 func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	if _is_logging: print("Loading resource files ...")
-	var resources_to_cache := self.get_resource_file_list(["tres", "res", "material", "tscn", "scn"])
+	var resources_to_cache := Util.get_resource_file_list(["tres", "res", "material", "tscn", "scn"])
 	for resource_path in resources_to_cache:
 		var res = ResourceLoader.load(resource_path)
 		#print(["!!!", res.get_class()])
@@ -135,41 +135,3 @@ func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	# Call _on_done back on the main thread
 	OS.delay_msec(_thread_sleep_ms)
 	on_done_cb.call_deferred()
-
-func get_resource_file_list(extensions : Array[String], paths_to_ignore := []) -> Array[String]:
-	var resources : Array[String] = []
-
-	# Get all the resource files in the project
-	var to_search : Array[String] = ["res://"]
-	while not to_search.is_empty():
-		var path : String = to_search.pop_front()
-		var dir := DirAccess.open(path)
-		if dir == null:
-			push_error("Failed to open directory: %s" % [path])
-			continue
-
-		dir.list_dir_begin()
-
-		while true:
-			var entry := dir.get_next()
-			var full_entry := dir.get_current_dir().path_join(entry)
-
-			if entry == "":
-				break
-
-			if dir.current_is_dir():
-				if entry != "." and entry != "..":
-					to_search.append(full_entry)
-			else:
-				var is_ignored := false
-				for path_to_ignore in paths_to_ignore:
-					if full_entry.begins_with(path_to_ignore):
-						is_ignored = true
-
-				if not is_ignored:
-					if extensions.has(full_entry.get_extension().to_lower()):
-						resources.append(full_entry)
-
-		dir.list_dir_end()
-
-	return resources
