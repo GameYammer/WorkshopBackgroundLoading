@@ -29,6 +29,15 @@ func start_caching_thread(on_each_cb : Callable, on_done_cb : Callable, thread_s
 	assert(err == OK)
 	#_run_caching_thread(on_each_cb, on_done_cb)
 
+func stop() -> void:
+	if _loading_thread:
+		_loading_thread.wait_to_finish()
+		_loading_thread = null
+
+	_resource_cache.clear()
+	_material_inst_cache.clear()
+	_particle_inst_cache.clear()
+	_node_inst_cache.clear()
 
 func _run_caching_thread(on_each_cb : Callable, on_done_cb : Callable) -> void:
 	if _is_logging: print("Loading resource files ...")

@@ -4,6 +4,7 @@
 
 extends Node
 
+var _is_running := false
 var _thread : Thread
 var _mutex : Mutex
 var _semaphore : Semaphore
@@ -32,9 +33,23 @@ func start_instancer_thread() -> void:
 	_semaphore = Semaphore.new()
 	var err := _thread.start(_run_instancer_thread, Thread.PRIORITY_LOW)
 	assert(err == OK)
+	_is_running = true
+
+func stop() -> void:
+	if not _is_running: return
+	_is_running = false
+
+	if _semaphore:
+		_semaphore.post()
+
+	if _thread:
+		_thread.wait_to_finish()
+		_thread = null
+
+	_to_inst.clear()
 
 func _run_instancer_thread() -> void:
-	while true:
+	while _is_running:
 		_semaphore.wait()
 
 		var has_entries := true

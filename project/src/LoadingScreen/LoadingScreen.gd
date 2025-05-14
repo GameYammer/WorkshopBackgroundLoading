@@ -6,12 +6,10 @@ extends Control
 
 '''
 # TODO
-. Make threads shut down correctly
 . Add other Materials
 . Cache materials in dict by name instead of array
 . Create an instance of the World in the thread then switch to it instead of change_scene_to_packed
 . Before loading the world, add a small sub viewport and load the scenes into it, to force shader compilation
-. Add a function to instance sync and async as to not block main thread
 '''
 
 var _start_loading_time := 0.0
